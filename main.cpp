@@ -2,13 +2,20 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 using namespace std;
 void cmdArgument(int argc, char *argv[]);
 void openFiles();
+struct node* createNode(struct Process process);
+struct node* insertBack(struct node* header,struct Process process);
+struct node* deleteFront(struct node* header);
+
+void readProcess();
 void fcfs_function();
+int is_empty(struct node *header);
 char *valueF, *valueO;
 FILE *infile, *outfile;
-
+struct node* l_header;
 enum Scheduling_method{
     None = 0,
     FSFS = 1,
@@ -66,7 +73,11 @@ struct Config
 struct Process{
     int burst_time;
     int arrival_time;
-    int priorityy;
+    int priority;
+};
+struct node{
+    struct Process data;
+    struct node *next;
 };
 
 
@@ -76,8 +87,8 @@ int main(int argc, char *argv[]){
     
     cmdArgument(argc,argv);
     openFiles();
+    readProcess();
     int menu_opt = 0;
-    
     back :
     do{
         string method = (config.method == 0) ? "None"
@@ -112,7 +123,6 @@ int main(int argc, char *argv[]){
     
     return 0;
 }
-
 void cmdArgument(int argc, char *argv[])
 {
     int opt;
@@ -145,7 +155,6 @@ void cmdArgument(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 }
-
 void openFiles()
 {
     infile = fopen(valueF,"r");
@@ -155,8 +164,85 @@ void openFiles()
     }
 
 }
+node *createNode(Process process)
+{
+    struct node* temp = NULL;
+    temp = (struct node*)malloc(sizeof(node));
+    temp->data = process;
+    temp->next = NULL;
+    return temp;
+}
+node *insertBack(node *header, Process process)
+{
+    struct node* temp = createNode(process);
+    struct node* headerTemp = header;
+    if(header == NULL){
+        header = temp;
+        return header;
+    }
+    while (headerTemp->next != NULL)
+    {
+        headerTemp = headerTemp->next;
+    }
+    
+    headerTemp->next = temp;
+    return header;
+}
+node *deleteFront(node *header)
+{
+    struct node* temp;
+    if(header == NULL)
+        return header;
+    temp = header;
+    header = header->next;
+    free(temp);
+    return header;
+}
+void readProcess()
+{
+    l_header = NULL;
 
+    char processData[100];
+    int ds[3];
+    int i=0;
+    while (fgets(processData, sizeof(processData), infile) != NULL) {
+        printf("%s", processData);
+        i=0;
+        char *data = strtok(processData,":");
+         while (data != NULL) {
+            printf("Token: %s\n", data);
+            data = strtok(NULL, ":");
+            ds[i] = atoi(data);
+            i++;
+        }
+        struct Process process;
+        process.burst_time = ds[0];
+        process.arrival_time = ds[1];
+        process.priority = ds[2];
+
+        l_header = insertBack(l_header,process);
+    }
+    fclose(infile);
+    struct node* temp = l_header;
+    while (temp->next != nullptr)
+    {
+        cout << temp->data.burst_time << ":" << temp->data.arrival_time << ":" << temp->data.priority << endl;
+        temp = temp->next;
+    }
+
+   
+    while (l_header != nullptr){
+        l_header = deleteFront(l_header);
+    }
+
+}
 void fcfs_function()
 {
 
+}
+int is_empty(struct node *header){
+    if(header == NULL)
+        return 1;
+    else 
+        return 0;
 }
