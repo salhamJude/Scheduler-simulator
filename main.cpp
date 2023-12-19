@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 using namespace std;
+void cmdArgument(int argc, char *argv[]);
+void openFiles();
+void fcfs_function();
 char *valueF, *valueO;
 FILE *infile, *outfile;
 
@@ -60,9 +63,13 @@ struct Config
         preemptive_mode = opt;
     }
 } config;
+struct Process{
+    int burst_time;
+    int arrival_time;
+    int priorityy;
+};
 
-void cmdArgument(int argc, char *argv[]);
-void openFiles();
+
 
 int main(int argc, char *argv[]){
 
@@ -146,5 +153,10 @@ void openFiles()
         cerr << "Cannot open the input file" << endl;
         exit(EXIT_FAILURE);
     }
+
+}
+
+void fcfs_function()
+{
 
 }
