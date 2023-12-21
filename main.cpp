@@ -9,10 +9,11 @@ void openFiles();
 struct node* createNode(struct Process process);
 struct node* insertBack(struct node* header,struct Process process);
 struct node* deleteFront(struct node* header);
-
+void swap(struct node* a, struct node* b);
 void readProcess();
 void fcfs_function();
 int is_empty(struct node *header);
+
 char *valueF, *valueO;
 FILE *infile, *outfile;
 struct node* l_header;
@@ -198,6 +199,11 @@ node *deleteFront(node *header)
     free(temp);
     return header;
 }
+void swap(node *a, node *b)
+{
+
+    return;
+}
 void readProcess()
 {
     l_header = NULL;
@@ -238,6 +244,7 @@ void readProcess()
 }
 void fcfs_function()
 {
+    struct Process processes;
 
 }
 int is_empty(struct node *header){
