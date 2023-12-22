@@ -29,6 +29,7 @@ struct Config
     Scheduling_method method = Scheduling_method::None;
     int preemptive_mode = 0;
     int time_quantum = 0;
+    int nb_process = 0;
     void setMethod(){
         int opt;
        do{
@@ -118,6 +119,8 @@ int main(int argc, char *argv[]){
         case 2:
             config.setPreemptive_mode();
             goto back;
+        case 3:
+            fcfs_function();
         break;
             
     }
@@ -220,6 +223,7 @@ void readProcess()
             data = strtok(NULL, ":");
             ds[i] = atoi(data);
             i++;
+            config.nb_process++;
         }
         struct Process process;
         process.burst_time = ds[0];
@@ -244,7 +248,35 @@ void readProcess()
 }
 void fcfs_function()
 {
-    struct Process processes;
+    cout <<"enter\n";
+    Process processes [config.nb_process];
+    struct node* temp = l_header;
+    int i = 0;
+    while (temp->next != NULL)
+    {
+        processes[i] = temp->data;
+        temp = temp->next;
+    }
+    
+    
+    Process t;
+    for (int i = 1; i<config.nb_process; i++)             
+    {
+            for (int j =0; j<config.nb_process - i; j++)   
+                                            
+            {                                                                  
+                    if (processes[j].arrival_time >  processes[j+1].arrival_time ) 
+                    {                          
+                            t =processes[j+1];
+                            processes[j+1]= processes[j];
+                            processes[j] = t;
+                    }          
+            }
+    }
+
+    for (int i = 1; i<config.nb_process; i++){
+        cout << processes[i].arrival_time <<" ";
+    }
 
 }
 int is_empty(struct node *header){
