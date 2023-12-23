@@ -9,7 +9,7 @@ void openFiles();
 struct node* createNode(struct Process process);
 struct node* insertBack(struct node* header,struct Process process);
 struct node* deleteFront(struct node* header);
-void swap(struct node* a, struct node* b);
+void swap(struct Process& a, struct Process& b);
 void readProcess();
 void fcfs_function();
 int is_empty(struct node *header);
@@ -172,7 +172,9 @@ node *createNode(Process process)
 {
     struct node* temp = NULL;
     temp = (struct node*)malloc(sizeof(node));
-    temp->data = process;
+    temp->data.arrival_time = process.arrival_time;
+    temp->data.burst_time = process.burst_time;
+    temp->data.priority = process.priority;
     temp->next = NULL;
     return temp;
 }
@@ -202,10 +204,20 @@ node *deleteFront(node *header)
     free(temp);
     return header;
 }
-void swap(node *a, node *b)
+void swap(struct Process& a, struct Process& b)
 {
+    struct Process t;
+    t.arrival_time = a.arrival_time;
+    t.burst_time = a.burst_time;
+    t.priority = a.priority;
 
-    return;
+    a.arrival_time = b.arrival_time;
+    a.burst_time = b.burst_time;
+    a.priority = b.priority;
+
+    b.arrival_time = t.arrival_time;
+    b.burst_time = t.burst_time;
+    b.priority = t.priority;
 }
 void readProcess()
 {
@@ -213,71 +225,83 @@ void readProcess()
 
     char processData[100];
     int ds[3];
-    int i=0;
+    int i=0, j =0;
     while (fgets(processData, sizeof(processData), infile) != NULL) {
+        
         printf("%s", processData);
         i=0;
+        string val;
         char *data = strtok(processData,":");
          while (data != NULL) {
-            printf("Token: %s\n", data);
+            val = data;
             data = strtok(NULL, ":");
-            ds[i] = atoi(data);
+            ds[i] = stoi(val);
             i++;
-            config.nb_process++;
         }
         struct Process process;
         process.burst_time = ds[0];
         process.arrival_time = ds[1];
         process.priority = ds[2];
-
-        l_header = insertBack(l_header,process);
+        if(j == 0){
+            l_header = createNode(process);
+        }else{
+            l_header = insertBack(l_header,process);
+        }
+        j++;
+        config.nb_process++;
     }
     fclose(infile);
     struct node* temp = l_header;
-    while (temp->next != nullptr)
+    
+   /*
+    while (temp != nullptr)
     {
         cout << temp->data.burst_time << ":" << temp->data.arrival_time << ":" << temp->data.priority << endl;
         temp = temp->next;
     }
 
-   
     while (l_header != nullptr){
         l_header = deleteFront(l_header);
     }
-
+    */
 }
 void fcfs_function()
 {
-    cout <<"enter\n";
+    
     Process processes [config.nb_process];
     struct node* temp = l_header;
     int i = 0;
-    while (temp->next != NULL)
-    {
-        processes[i] = temp->data;
-        temp = temp->next;
-    }
     
+    while (temp != nullptr)
+    {
+        processes[i].arrival_time = temp->data.arrival_time;
+        processes[i].burst_time = temp->data.burst_time;
+        processes[i].priority = temp->data.priority;
+        cout << temp->data.burst_time << ":" << temp->data.arrival_time << ":" << temp->data.priority << endl;
+        temp = temp->next;
+        i++;
+    }
     
     Process t;
-    for (int i = 1; i<config.nb_process; i++)             
-    {
-            for (int j =0; j<config.nb_process - i; j++)   
-                                            
-            {                                                                  
-                    if (processes[j].arrival_time >  processes[j+1].arrival_time ) 
-                    {                          
-                            t =processes[j+1];
-                            processes[j+1]= processes[j];
-                            processes[j] = t;
-                    }          
-            }
-    }
-
     for (int i = 1; i<config.nb_process; i++){
-        cout << processes[i].arrival_time <<" ";
+        for (int j =0; j<config.nb_process - i; j++){                                                                  
+            if (processes[j].arrival_time >  processes[j+1].arrival_time ) {
+                swap(processes[j],processes[j+1]);     
+            }          
+        }
     }
 
+    cout << endl;
+
+    for (int i = 0; i<config.nb_process; i++){
+        cout << processes[i].burst_time << ":" << processes[i].arrival_time << ":" << processes[i].priority << endl;
+    }
+
+    int waiting_time[config.nb_process];
+
+    for(int i = 0; i < config.nb_process; i++){
+        
+    }
 }
 int is_empty(struct node *header){
     if(header == NULL)
