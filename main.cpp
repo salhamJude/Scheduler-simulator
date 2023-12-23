@@ -6,12 +6,16 @@
 using namespace std;
 void cmdArgument(int argc, char *argv[]);
 void openFiles();
+void writeOutput();
 struct node* createNode(struct Process process);
 struct node* insertBack(struct node* header,struct Process process);
 struct node* deleteFront(struct node* header);
 void swap(struct Process& a, struct Process& b);
 void readProcess();
 void fcfs_function();
+void sjf_function();
+void priority_function();
+void rr_function();
 int is_empty(struct node *header);
 
 char *valueF, *valueO;
@@ -30,6 +34,7 @@ struct Config
     int preemptive_mode = 0;
     int time_quantum = 0;
     int nb_process = 0;
+    string out;
     void setMethod(){
         int opt;
        do{
@@ -120,11 +125,29 @@ int main(int argc, char *argv[]){
             config.setPreemptive_mode();
             goto back;
         case 3:
-            fcfs_function();
-        break;
-            
+            switch (config.method)
+            {
+                case Scheduling_method::None :
+                    goto back;
+                    break;
+                case Scheduling_method::FSFS :
+                    fcfs_function();
+                    break;
+                case Scheduling_method::SJF :
+                    sjf_function();
+                    break;
+                case Scheduling_method::PRIORITY :
+                    priority_function();
+                    break;
+                case Scheduling_method::RR:
+                    rr_function();
+                    break;
+                default:
+                    goto back;
+                    break;
+            }
+        break;  
     }
-    
     return 0;
 }
 void cmdArgument(int argc, char *argv[])
@@ -167,6 +190,11 @@ void openFiles()
         exit(EXIT_FAILURE);
     }
 
+}
+void writeOutput()
+{
+    outfile = fopen(valueO,"w+");
+    fprintf(outfile,config.out.c_str());
 }
 node *createNode(Process process)
 {
@@ -267,7 +295,8 @@ void readProcess()
 }
 void fcfs_function()
 {
-    
+    config.out += "Scheduling Method: First Come First Served\n";
+    config.out += "Process Waiting Times:\n";
     Process processes [config.nb_process];
     struct node* temp = l_header;
     int i = 0;
@@ -277,33 +306,47 @@ void fcfs_function()
         processes[i].arrival_time = temp->data.arrival_time;
         processes[i].burst_time = temp->data.burst_time;
         processes[i].priority = temp->data.priority;
-        cout << temp->data.burst_time << ":" << temp->data.arrival_time << ":" << temp->data.priority << endl;
         temp = temp->next;
         i++;
     }
     
-    Process t;
-    for (int i = 1; i<config.nb_process; i++){
-        for (int j =0; j<config.nb_process - i; j++){                                                                  
-            if (processes[j].arrival_time >  processes[j+1].arrival_time ) {
-                swap(processes[j],processes[j+1]);     
-            }          
-        }
-    }
-
     cout << endl;
 
     for (int i = 0; i<config.nb_process; i++){
         cout << processes[i].burst_time << ":" << processes[i].arrival_time << ":" << processes[i].priority << endl;
     }
 
-    int waiting_time[config.nb_process];
+    int waiting_time[config.nb_process],avg =0;
 
     for(int i = 0; i < config.nb_process; i++){
-        
+        waiting_time[i]  = 0;
+        for (int j = 0; j < i; j++)
+        {
+            waiting_time[i] += processes[j].burst_time;
+        }
+        waiting_time[i] -= processes[i].arrival_time;
+        avg += waiting_time[i];
+        cout << "P" << i << ":" << waiting_time[i] << "ms\n";
+        config.out += "P" + std::to_string(i) + ":" + std::to_string(waiting_time[i]) + "ms\n";
     }
+    cout << "Average Waiting Time:" << avg/config.nb_process << "ms" << endl;
+    config.out += "Average Waiting Time:" + std::to_string(avg/config.nb_process) + "ms\n";
+    writeOutput();
 }
-int is_empty(struct node *header){
+void sjf_function()
+{
+    return;
+}
+void priority_function()
+{
+    return;
+}
+void rr_function()
+{
+    return;
+}
+int is_empty(struct node *header)
+{
     if(header == NULL)
         return 1;
     else 

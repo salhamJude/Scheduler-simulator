@@ -1,0 +1,8 @@
+Scheduling Method: First Come First Served
+Process Waiting Times:
+P0:0ms
+P1:4ms
+P2:8ms
+P3:10ms
+P4:13ms
+Average Waiting Time:7ms
