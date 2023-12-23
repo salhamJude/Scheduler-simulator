@@ -342,7 +342,57 @@ void priority_function()
     return;
 }
 void rr_function()
-{
+{   int burst_time[config.nb_process];
+    int left[config.nb_process];
+    int right[config.nb_process];
+
+    int waiting_time[config.nb_process]={0},avg =0;
+    int last = 0;
+    config.out += "Scheduling Method: Round Robin Scheduling – time_quantum=" + std::to_string(config.time_quantum) + "\n";
+    config.out += "Process Waiting Times:\n";
+    Process processes [config.nb_process];
+    struct node* temp = l_header;
+    int l = 0;
+    bool repeat = true;
+    while (temp != nullptr)
+    {
+        processes[l].arrival_time = temp->data.arrival_time;
+        processes[l].burst_time = temp->data.burst_time;
+        processes[l].priority = temp->data.priority;
+        temp = temp->next;
+        l++;
+    }
+    for (int i = 0; i < config.nb_process; i++)
+    {
+        burst_time[i] = processes[i].burst_time;
+        right[i] = processes[i].arrival_time;
+    }
+    while (repeat)
+    {
+        for (int i = 0; i < config.nb_process; i++)
+        {
+            last += burst_time[i] - config.time_quantum >= 0 ? 2 : burst_time[i];
+            border[i] += burst_time[i] - config.time_quantum >= 0 ? 2 : burst_time[i];
+            burst_time[i] = burst_time[i] - config.time_quantum >= 0 ? burst_time[i] - config.time_quantum : 0;
+           // cout << burst_time[i] << " ";
+            cout << last << " ";
+        }
+
+        cout<<endl;
+        repeat = false;
+
+        for (int i = 0; i < config.nb_process; i++)
+        {
+            repeat = burst_time[i] > 0 ? true : false;
+        }
+    } 
+        cout<<endl;
+        cout<<endl;
+    for (int i = 0; i < config.nb_process; i++)
+        {
+             cout << border[i] << " ";
+        }
+    
     return;
 }
 int is_empty(struct node *header)
