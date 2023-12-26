@@ -19,7 +19,7 @@ void sjf_function();
 void priority_function();
 void rr_function();
 int is_empty(struct node *header);
-
+int getIndex(vector<int> v, int e);
 char *valueF, *valueO;
 FILE *infile, *outfile;
 struct node* l_header;
@@ -355,12 +355,58 @@ void sjf_function()
             l++;
             processes.push_back(p);
         }
+        int pref[config.nb_process];
+        for (int i = 0; i < config.nb_process; i++)
+        {
+            pref[i] = i + 1;
+        }
         
         struct Process fp = processes[0];
         struct Process short_job = processes[0];
         processes.erase(processes.begin());
         vector<Process> next_executions;
         vector<int> executions;
+        while (true) {
+            bool gl = true;
+
+            for (int i = 0; i < processes.size(); ++i) {
+                if (processes[i].arrival_time == current_time) {
+                    for (int j = 0; j < next_executions.size(); ++j) {
+                        if (next_executions[j].burst_time > processes[i].burst_time) {
+                            gl = false;
+                            next_executions.insert(next_executions.begin() + j, processes[i]);
+                            break;
+                        }
+                    }
+
+                    if (gl) {
+                        next_executions.push_back(processes[i]);
+                    }
+                }
+            }
+
+            current_time += 1;
+            short_job.burst_time -= 1;
+            int id = getIndex(processes,short_job);
+            executions.push_back(id);
+            x += 1;
+
+            if (short_job.burst_time <= 0) {
+                if (!next_executions.empty()) {
+                    short_job = next_executions[0];
+                    next_executions.erase(next_executions.begin());
+                    executed += 1;
+                } else {
+                    break;  
+                }
+            }
+        }
+        std::cout << "Execution order: ";
+        for (int code : executions) {
+            std::cout << code << " ";
+        }
+        std::cout << std::endl;
+
     }
     
 }
@@ -445,4 +491,17 @@ int is_empty(struct node *header)
         return 1;
     else 
         return 0;
+}
+
+int getIndex(vector<Process> p, int e)
+{
+    auto i = find(p.begin(), p.end(), e);
+    if (i != v.end())  
+    { 
+        int index = i - p.begin(); 
+        return index;
+    } 
+    else { 
+        /return -1;
+    } 
 }
