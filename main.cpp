@@ -19,7 +19,6 @@ void sjf_function();
 void priority_function();
 void rr_function();
 int is_empty(struct node *header);
-int getIndex(vector<int> v, int e);
 char *valueF, *valueO;
 FILE *infile, *outfile;
 struct node* l_header;
@@ -83,6 +82,7 @@ struct Process{
     int burst_time;
     int arrival_time;
     int priority;
+    int c;
 };
 struct node{
     struct Process data;
@@ -345,12 +345,14 @@ void sjf_function()
         int executed = 1;
         int x = 0;
         struct node* temp = l_header;
+        int l =1;
         while (temp != nullptr)
         {
             struct Process p;
             p.arrival_time = temp->data.arrival_time;
             p.burst_time = temp->data.burst_time;
             p.priority = temp->data.priority;
+            p.c = l;
             temp = temp->next;
             l++;
             processes.push_back(p);
@@ -387,8 +389,7 @@ void sjf_function()
 
             current_time += 1;
             short_job.burst_time -= 1;
-            int id = getIndex(processes,short_job);
-            executions.push_back(id);
+            executions.push_back(short_job.c);
             x += 1;
 
             if (short_job.burst_time <= 0) {
@@ -406,7 +407,28 @@ void sjf_function()
             std::cout << code << " ";
         }
         std::cout << std::endl;
+        processes.insert(processes.begin(), fp);
+        vector<int> start_time(processes.size(), 0);
+        int pro = 1;
 
+        for (int i = 0; i < processes.size(); ++i) {
+            for (int j = 0; j < executions.size(); ++j) {
+                if (executions[j] == pro) {
+                    start_time[i] = j;
+                    pro += 1;
+                    break;
+                }
+            }
+        }
+        std::cout << "Start time: ";
+        for (int time : start_time) {
+            std::cout << time << " ";
+        }
+        std::cout << std::endl;
+        for (size_t i = 0; i < processes.size(); ++i) {
+        int wt = start_time[i] - processes[i].arrival_time;
+        std::cout << "P" << processes[i].c << " : " << wt << std::endl;
+    }
     }
     
 }
@@ -493,15 +515,4 @@ int is_empty(struct node *header)
         return 0;
 }
 
-int getIndex(vector<Process> p, int e)
-{
-    auto i = find(p.begin(), p.end(), e);
-    if (i != v.end())  
-    { 
-        int index = i - p.begin(); 
-        return index;
-    } 
-    else { 
-        /return -1;
-    } 
-}
+
