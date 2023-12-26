@@ -82,7 +82,7 @@ struct Process{
     int burst_time;
     int arrival_time;
     int priority;
-    int c;
+    int c = 0;
 };
 struct node{
     struct Process data;
@@ -297,8 +297,11 @@ void readProcess()
 }
 void fcfs_function()
 {
+    config.out = "";
     config.out += "Scheduling Method: First Come First Served\n";
     config.out += "Process Waiting Times:\n";
+    cout << "Scheduling Method: First Come First Served\n";
+    cout << "Process Waiting Times:\n";
     Process processes [config.nb_process];
     struct node* temp = l_header;
     int i = 0;
@@ -312,13 +315,8 @@ void fcfs_function()
         i++;
     }
     
-    cout << endl;
-
-    for (int i = 0; i<config.nb_process; i++){
-        cout << processes[i].burst_time << ":" << processes[i].arrival_time << ":" << processes[i].priority << endl;
-    }
-
-    int waiting_time[config.nb_process],avg =0;
+    int waiting_time[config.nb_process];
+    float avg =0.0;
 
     for(int i = 0; i < config.nb_process; i++){
         waiting_time[i]  = 0;
@@ -340,12 +338,19 @@ void sjf_function()
     if(config.preemptive_mode){
 
     }else{
+        
+        config.out = "";
+        config.out += "Scheduling Method: Shortest Job First - Non-Preemptive\n";
+        config.out += "Process Waiting Times:\n";    
+        cout <<  "Scheduling Method: Shortest Job First - Non-Preemptive\n";
+        cout << "Process Waiting Times:\n";
         vector<Process> processes;
         int current_time = 0; 
         int executed = 1;
         int x = 0;
         struct node* temp = l_header;
         int l =1;
+        float avg =0.0;
         while (temp != nullptr)
         {
             struct Process p;
@@ -402,11 +407,6 @@ void sjf_function()
                 }
             }
         }
-        std::cout << "Execution order: ";
-        for (int code : executions) {
-            std::cout << code << " ";
-        }
-        std::cout << std::endl;
         processes.insert(processes.begin(), fp);
         vector<int> start_time(processes.size(), 0);
         int pro = 1;
@@ -420,15 +420,15 @@ void sjf_function()
                 }
             }
         }
-        std::cout << "Start time: ";
-        for (int time : start_time) {
-            std::cout << time << " ";
+        for (int i = 0; i < processes.size(); ++i) {
+            int wt = start_time[i] - processes[i].arrival_time;
+             avg += wt;
+            cout << "P" << processes[i].c << ": " << wt << "ms" << endl;
+            config.out += "P" + std::to_string(processes[i].c) + ":" + std::to_string(wt) + "ms\n";
         }
-        std::cout << std::endl;
-        for (size_t i = 0; i < processes.size(); ++i) {
-        int wt = start_time[i] - processes[i].arrival_time;
-        std::cout << "P" << processes[i].c << " : " << wt << std::endl;
-    }
+        cout << "Average Waiting Time:" << avg/config.nb_process << "ms" << endl;
+        config.out += "Average Waiting Time:" + std::to_string(avg/config.nb_process) + "ms\n";
+        writeOutput();
     }
     
 }
@@ -436,16 +436,20 @@ void priority_function()
 {
     return;
 }
-void rr_function()
-{   int burst_time[config.nb_process];
+void rr_function(){
+    config.out = "";
+    config.out += "Scheduling Method: Round Robin Scheduling - time_quantum = " + std::to_string(config.time_quantum) + "\n";
+    config.out += "Process Waiting Times:\n";    
+    cout << "Scheduling Method: Round Robin Scheduling - time_quantum = " + std::to_string(config.time_quantum) + "\n";
+    cout << "Process Waiting Times:\n";
+    int burst_time[config.nb_process];
     int border[config.nb_process] = {0};
     int left[config.nb_process];
     int right[config.nb_process];
 
-    int waiting_time[config.nb_process]={0},avg =0;
+    int waiting_time[config.nb_process]={0};
+    float avg =0.0;
     int last = 0;
-    config.out += "Scheduling Method: Round Robin Scheduling – time_quantum=" + std::to_string(config.time_quantum) + "\n";
-    config.out += "Process Waiting Times:\n";
     Process processes [config.nb_process];
     struct node* temp = l_header;
     int l = 0;
@@ -474,19 +478,9 @@ void rr_function()
                 last += burst_time[i] - config.time_quantum >= 0 ? config.time_quantum : burst_time[i];
                 right[i] = last;
                 burst_time[i] = burst_time[i] - config.time_quantum >= 0 ? burst_time[i] - config.time_quantum : 0;
-            // cout << burst_time[i] << " ";
-            // cout << last << " ";
-
             }
         }
-
-        cout<<endl;
         repeat = false;
-        cout << "burst time : ";
-        for (int i = 0; i < config.nb_process; i++)
-        {
-            cout << burst_time[i] << " ";
-        }
         for (int i = 0; i < config.nb_process; i++)
         {
             if(burst_time[i] > 0){
@@ -494,17 +488,15 @@ void rr_function()
                 break;
             }
         }
-        cout<<endl;
     } 
-    cout<<endl;
-    cout<<endl;
-    
-    cout << "process waiting time :";
-    for (int i = 0; i < config.nb_process; i++)
-        {
-             cout << waiting_time[i] << " ";
-        }
-    
+    for (int i = 0; i < config.nb_process; i++){
+        avg += waiting_time[i];
+        cout << "P" << i << ":" << waiting_time[i] << "ms\n";
+        config.out += "P" + std::to_string(i) + ":" + std::to_string(waiting_time[i]) + "ms\n";
+    }
+    cout << "Average Waiting Time:" << avg/config.nb_process << "ms" << endl;
+    config.out += "Average Waiting Time:" + std::to_string(avg/config.nb_process) + "ms\n";
+    writeOutput();
     return;
 }
 int is_empty(struct node *header)
