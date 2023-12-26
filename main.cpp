@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <vector>
 using namespace std;
+
 void cmdArgument(int argc, char *argv[]);
 void openFiles();
 void writeOutput();
@@ -335,7 +337,17 @@ void fcfs_function()
 }
 void sjf_function()
 {
-    return;
+    if(config.preemptive_mode){
+
+    }else{
+        vector<Process> processes;
+        int current_time = 0; 
+        int executed = 1;
+        int x = 0;
+        struct node* temp = l_header;
+        
+    }
+    
 }
 void priority_function()
 {
@@ -343,6 +355,7 @@ void priority_function()
 }
 void rr_function()
 {   int burst_time[config.nb_process];
+    int border[config.nb_process] = {0};
     int left[config.nb_process];
     int right[config.nb_process];
 
@@ -371,26 +384,42 @@ void rr_function()
     {
         for (int i = 0; i < config.nb_process; i++)
         {
-            last += burst_time[i] - config.time_quantum >= 0 ? 2 : burst_time[i];
-            border[i] += burst_time[i] - config.time_quantum >= 0 ? 2 : burst_time[i];
-            burst_time[i] = burst_time[i] - config.time_quantum >= 0 ? burst_time[i] - config.time_quantum : 0;
-           // cout << burst_time[i] << " ";
-            cout << last << " ";
+            if(burst_time[i] > 0){
+                left[i] = last;
+                waiting_time[i] += left[i] - right[i];
+
+                last += burst_time[i] - config.time_quantum >= 0 ? config.time_quantum : burst_time[i];
+                right[i] = last;
+                burst_time[i] = burst_time[i] - config.time_quantum >= 0 ? burst_time[i] - config.time_quantum : 0;
+            // cout << burst_time[i] << " ";
+            // cout << last << " ";
+
+            }
         }
 
         cout<<endl;
         repeat = false;
-
+        cout << "burst time : ";
         for (int i = 0; i < config.nb_process; i++)
         {
-            repeat = burst_time[i] > 0 ? true : false;
+            cout << burst_time[i] << " ";
         }
+        for (int i = 0; i < config.nb_process; i++)
+        {
+            if(burst_time[i] > 0){
+                repeat = true;
+                break;
+            }
+        }
+        cout<<endl;
     } 
-        cout<<endl;
-        cout<<endl;
+    cout<<endl;
+    cout<<endl;
+    
+    cout << "process waiting time :";
     for (int i = 0; i < config.nb_process; i++)
         {
-             cout << border[i] << " ";
+             cout << waiting_time[i] << " ";
         }
     
     return;
