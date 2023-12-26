@@ -345,7 +345,22 @@ void sjf_function()
         int executed = 1;
         int x = 0;
         struct node* temp = l_header;
+        while (temp != nullptr)
+        {
+            struct Process p;
+            p.arrival_time = temp->data.arrival_time;
+            p.burst_time = temp->data.burst_time;
+            p.priority = temp->data.priority;
+            temp = temp->next;
+            l++;
+            processes.push_back(p);
+        }
         
+        struct Process fp = processes[0];
+        struct Process short_job = processes[0];
+        processes.erase(processes.begin());
+        vector<Process> next_executions;
+        vector<int> executions;
     }
     
 }
