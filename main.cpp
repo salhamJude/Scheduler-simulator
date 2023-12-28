@@ -422,7 +422,7 @@ void sjf_function()
         }
         for (int i = 0; i < processes.size(); ++i) {
             int wt = start_time[i] - processes[i].arrival_time;
-             avg += wt;
+                avg += wt;
             cout << "P" << processes[i].c << ": " << wt << "ms" << endl;
             config.out += "P" + std::to_string(processes[i].c) + ":" + std::to_string(wt) + "ms\n";
         }
