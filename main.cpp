@@ -359,7 +359,14 @@ void sjf_function()
             l++;
             processes.push_back(p);
         }
-
+        
+        int right[config.nb_process];
+        int waiting_time[config.nb_process]={0};
+        for (int i = 0; i < config.nb_process; i++)
+        {
+            right[i] = processes[i].arrival_time;
+        }
+        
         struct Process fp = processes[0];
         struct Process short_job = processes[0];
         processes.erase(processes.begin());
@@ -387,6 +394,9 @@ void sjf_function()
                 if(short_job.burst_time > next_executions[i].burst_time){
                     struct Process temp = short_job;
                     short_job = next_executions[i];
+
+                    right[temp.c - 1] = current_time;
+                    waiting_time[short_job.c - 1] += current_time - right[short_job.c - 1];
                     next_executions.erase(std::next(next_executions.begin(),i));
                     for(int j = 0; j < next_executions.size(); j++){
                         if(temp.burst_time < next_executions[j].burst_time){
@@ -415,6 +425,8 @@ void sjf_function()
             x += 1;
             if (short_job.burst_time <= 0) {
                 if (!next_executions.empty()) {
+                    right[short_job.c - 1] = current_time;
+                    waiting_time[next_executions[0].c - 1] += current_time - right[next_executions[0].c - 1];
                     short_job = next_executions[0];
                     next_executions.erase(next_executions.begin());
                     executed += 1;
@@ -423,10 +435,14 @@ void sjf_function()
                 }
             }
         }
-        for(int i = 0; i < executions.size(); i++){
-            cout << executions[i] << " ";
+        for (int i = 0; i < config.nb_process; i++){
+            avg += waiting_time[i];
+            cout << "P" << i << ":" << waiting_time[i] << "ms\n";
+            config.out += "P" + std::to_string(i) + ":" + std::to_string(waiting_time[i]) + "ms\n";
         }
-        
+        cout << "Average Waiting Time:" << avg/config.nb_process << "ms" << endl;
+        config.out += "Average Waiting Time:" + std::to_string(avg/config.nb_process) + "ms\n";
+            
     }else{    
         config.out = "";
         config.out += "Scheduling Method: Shortest Job First - Non-Preemptive\n";
@@ -585,7 +601,6 @@ void rr_function(){
     cout << "Average Waiting Time:" << avg/config.nb_process << "ms" << endl;
     config.out += "Average Waiting Time:" + std::to_string(avg/config.nb_process) + "ms\n";
     writeOutput();
-    return;
 }
 int is_empty(struct node *header)
 {
