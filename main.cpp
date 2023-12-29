@@ -437,7 +437,7 @@ void sjf_function()
         }
         for (int i = 0; i < config.nb_process; i++){
             avg += waiting_time[i];
-            cout << "P" << i << ":" << waiting_time[i] << "ms\n";
+            cout << "P" << i + 1 << ":" << waiting_time[i] << "ms\n";
             config.out += "P" + std::to_string(i) + ":" + std::to_string(waiting_time[i]) + "ms\n";
         }
         cout << "Average Waiting Time:" << avg/config.nb_process << "ms" << endl;
@@ -595,7 +595,7 @@ void rr_function(){
     } 
     for (int i = 0; i < config.nb_process; i++){
         avg += waiting_time[i];
-        cout << "P" << i << ":" << waiting_time[i] << "ms\n";
+        cout << "P" << i + 1 << ":" << waiting_time[i] << "ms\n";
         config.out += "P" + std::to_string(i) + ":" + std::to_string(waiting_time[i]) + "ms\n";
     }
     cout << "Average Waiting Time:" << avg/config.nb_process << "ms" << endl;
