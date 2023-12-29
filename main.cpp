@@ -393,8 +393,15 @@ void sjf_function()
                             gl2 = false;
                             next_executions.insert(next_executions.begin() + j, temp);
                             break;
+                        }else if(temp.burst_time == next_executions[j].burst_time){
+                            gl2 = false;
+                            int  d = 0;
+                            if(temp.c > next_executions[j].c ){
+                                d++;
+                            }
+                            next_executions.insert(next_executions.begin() + j + d, temp);
+                            break;
                         }
-
                     }
                     if(gl2){
                         next_executions.push_back(temp);
