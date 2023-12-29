@@ -367,7 +367,7 @@ void sjf_function()
         vector<int> executions;
         while (true)
         {
-            bool gl = true; 
+            bool gl = true, gl2 = true; 
             for (int i = 0; i < processes.size(); ++i) {
                 if (processes[i].arrival_time == current_time) {
                     for (int j = 0; j < next_executions.size(); ++j) {
@@ -382,6 +382,26 @@ void sjf_function()
                     }
                 }
             }
+            
+            for(int i = 0; i < next_executions.size(); i++){
+                if(short_job.burst_time > next_executions[i].burst_time){
+                    struct Process temp = short_job;
+                    short_job = next_executions[i];
+                    next_executions.erase(std::next(next_executions.begin(),i));
+                    for(int j = 0; j < next_executions.size(); j++){
+                        if(temp.burst_time < next_executions[j].burst_time){
+                            gl2 = false;
+                            next_executions.insert(next_executions.begin() + j, temp);
+                            break;
+                        }
+
+                    }
+                    if(gl2){
+                        next_executions.push_back(temp);
+                    }
+                    break;
+                }
+            }
             current_time += 1;
             short_job.burst_time -= 1;
             executions.push_back(short_job.c);
@@ -393,21 +413,6 @@ void sjf_function()
                     executed += 1;
                 } else {
                     break;  
-                }
-            }
-            for(int i = 0; i < next_executions.size(); i++){
-                if(short_job.burst_time > next_executions[i].burst_time){
-                    struct Process temp = short_job;
-                    short_job = next_executions[i];
-                    next_executions.erase(std::next(next_executions.begin(),i));
-                    for(int j = 0; j < next_executions.size(); j++){
-                        if(temp.burst_time < next_executions[j].burst_time){
-                            next_executions.insert(next_executions.begin() + j, temp);
-                            break;
-                        }
-
-                    }
-                    break;
                 }
             }
         }
