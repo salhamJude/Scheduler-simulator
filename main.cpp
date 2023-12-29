@@ -336,13 +336,90 @@ void fcfs_function()
 void sjf_function()
 {
     if(config.preemptive_mode){
+        config.out = "";
+        config.out += "Scheduling Method: Shortest Job First - Preemptive\n";
+        config.out += "Process Waiting Times:\n";    
+        cout << "Scheduling Method: Shortest Job First - Preemptive\n";
+        cout << "Process Waiting Times:\n";
+        vector<Process> processes;
+        int current_time = 0; 
+        int executed = 1;
+        int x = 0;
+        struct node* temp = l_header;
+        int l =1;
+        float avg =0.0;
+        while (temp != nullptr)
+        {
+            struct Process p;
+            p.arrival_time = temp->data.arrival_time;
+            p.burst_time = temp->data.burst_time;
+            p.priority = temp->data.priority;
+            p.c = l;
+            temp = temp->next;
+            l++;
+            processes.push_back(p);
+        }
 
-    }else{
+        struct Process fp = processes[0];
+        struct Process short_job = processes[0];
+        processes.erase(processes.begin());
+        vector<Process> next_executions;
+        vector<int> executions;
+        while (true)
+        {
+            bool gl = true; 
+            for (int i = 0; i < processes.size(); ++i) {
+                if (processes[i].arrival_time == current_time) {
+                    for (int j = 0; j < next_executions.size(); ++j) {
+                        if (next_executions[j].burst_time > processes[i].burst_time) {
+                            gl = false;
+                            next_executions.insert(next_executions.begin() + j, processes[i]);
+                            break;
+                        }
+                    }
+                    if (gl) {
+                        next_executions.push_back(processes[i]);
+                    }
+                }
+            }
+            current_time += 1;
+            short_job.burst_time -= 1;
+            executions.push_back(short_job.c);
+            x += 1;
+            if (short_job.burst_time <= 0) {
+                if (!next_executions.empty()) {
+                    short_job = next_executions[0];
+                    next_executions.erase(next_executions.begin());
+                    executed += 1;
+                } else {
+                    break;  
+                }
+            }
+            for(int i = 0; i < next_executions.size(); i++){
+                if(short_job.burst_time > next_executions[i].burst_time){
+                    struct Process temp = short_job;
+                    short_job = next_executions[i];
+                    next_executions.erase(std::next(next_executions.begin(),i));
+                    for(int j = 0; j < next_executions.size(); j++){
+                        if(temp.burst_time < next_executions[j].burst_time){
+                            next_executions.insert(next_executions.begin() + j, temp);
+                            break;
+                        }
+
+                    }
+                    break;
+                }
+            }
+        }
+        for(int i = 0; i < executions.size(); i++){
+            cout << executions[i] << " ";
+        }
         
+    }else{    
         config.out = "";
         config.out += "Scheduling Method: Shortest Job First - Non-Preemptive\n";
         config.out += "Process Waiting Times:\n";    
-        cout <<  "Scheduling Method: Shortest Job First - Non-Preemptive\n";
+        cout << "Scheduling Method: Shortest Job First - Non-Preemptive\n";
         cout << "Process Waiting Times:\n";
         vector<Process> processes;
         int current_time = 0; 
@@ -385,7 +462,6 @@ void sjf_function()
                             break;
                         }
                     }
-
                     if (gl) {
                         next_executions.push_back(processes[i]);
                     }
