@@ -596,7 +596,15 @@ void priority_function()
             short_job.burst_time -= 1;
             executions.push_back(short_job.c);
             x += 1;
-  
+            if (short_job.burst_time <= 0) {
+                if (!next_executions.empty()) {
+                    short_job = next_executions[0];
+                    next_executions.erase(next_executions.begin());
+                    executed += 1;
+                } else {
+                    break;  
+                }
+            }
     }
     
 }
