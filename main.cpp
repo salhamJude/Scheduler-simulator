@@ -574,7 +574,29 @@ void priority_function()
         processes.erase(processes.begin());
         vector<Process> next_executions;
         vector<int> executions;
-        
+        while (true) {
+            bool gl = true;
+
+            for (int i = 0; i < processes.size(); ++i) {
+                if (processes[i].arrival_time == current_time) {
+                    for (int j = 0; j < next_executions.size(); ++j) {
+                        if (next_executions[j].priority < processes[i].priority) {
+                            gl = false;
+                            next_executions.insert(next_executions.begin() + j, processes[i]);
+                            break;
+                        }
+                    }
+                    if (gl) {
+                        next_executions.push_back(processes[i]);
+                    }
+                }
+            }
+
+            current_time += 1;
+            short_job.burst_time -= 1;
+            executions.push_back(short_job.c);
+            x += 1;
+  
     }
     
 }
