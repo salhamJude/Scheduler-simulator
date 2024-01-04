@@ -605,6 +605,29 @@ void priority_function()
                     break;  
                 }
             }
+        }
+        processes.insert(processes.begin(), fp);
+        vector<int> start_time(processes.size(), 0);
+        int pro = 1;
+
+        for (int i = 0; i < processes.size(); ++i) {
+            for (int j = 0; j < executions.size(); ++j) {
+                if (executions[j] == pro) {
+                    start_time[i] = j;
+                    pro += 1;
+                    break;
+                }
+            }
+        }
+        for (int i = 0; i < processes.size(); ++i) {
+            int wt = start_time[i] - processes[i].arrival_time;
+                avg += wt;
+            cout << "P" << processes[i].c << ": " << wt << "ms" << endl;
+            config.out += "P" + std::to_string(processes[i].c) + ":" + std::to_string(wt) + "ms\n";
+        }
+        cout << "Average Waiting Time:" << avg/config.nb_process << "ms" << endl;
+        config.out += "Average Waiting Time:" + std::to_string(avg/config.nb_process) + "ms\n";
+        writeOutput();
     }
     
 }
