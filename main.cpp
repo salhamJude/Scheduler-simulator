@@ -538,7 +538,33 @@ void sjf_function()
 }
 void priority_function()
 {
-    return;
+    if(config.preemptive_mode){
+
+    }else{
+        config.out = "";
+        config.out += "Scheduling Method: Shortest Job First - Non-Preemptive\n";
+        config.out += "Process Waiting Times:\n";    
+        cout << "Scheduling Method: Shortest Job First - Non-Preemptive\n";
+        cout << "Process Waiting Times:\n";
+        vector<Process> processes;
+        int current_time = 0; 
+        int executed = 1;
+        int x = 0;
+        struct node* temp = l_header;
+        int l =1;
+        float avg =0.0;
+        while (temp != nullptr){
+            struct Process p;
+            p.arrival_time = temp->data.arrival_time;
+            p.burst_time = temp->data.burst_time;
+            p.priority = temp->data.priority;
+            p.c = l;
+            temp = temp->next;
+            l++;
+            processes.push_back(p);
+        }
+    }
+    
 }
 void rr_function(){
     config.out = "";
