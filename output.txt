@@ -1,4 +1,4 @@
-Scheduling Method: Shortest Job First - Non-Preemptive
+Scheduling Method: Priority Scheduling - Non-Preemptive
 Process Waiting Times:
 P1:0ms
 P2:10ms

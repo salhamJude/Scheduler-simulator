@@ -542,9 +542,9 @@ void priority_function()
 
     }else{
         config.out = "";
-        config.out += "Scheduling Method: Shortest Job First - Non-Preemptive\n";
+        config.out += "Scheduling Method: Priority Scheduling - Non-Preemptive\n";
         config.out += "Process Waiting Times:\n";    
-        cout << "Scheduling Method: Shortest Job First - Non-Preemptive\n";
+        cout << "Scheduling Method: Priority Scheduling - Non-Preemptive\n";
         cout << "Process Waiting Times:\n";
         vector<Process> processes;
         int current_time = 0; 
@@ -580,7 +580,7 @@ void priority_function()
             for (int i = 0; i < processes.size(); ++i) {
                 if (processes[i].arrival_time == current_time) {
                     for (int j = 0; j < next_executions.size(); ++j) {
-                        if (next_executions[j].priority < processes[i].priority) {
+                        if (next_executions[j].priority > processes[i].priority) {
                             gl = false;
                             next_executions.insert(next_executions.begin() + j, processes[i]);
                             break;
