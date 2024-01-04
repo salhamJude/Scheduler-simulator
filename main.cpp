@@ -563,6 +563,18 @@ void priority_function()
             l++;
             processes.push_back(p);
         }
+        
+        int pref[config.nb_process];
+        for (int i = 0; i < config.nb_process; i++)
+        {
+            pref[i] = i + 1;
+        }
+        struct Process fp = processes[0];
+        struct Process short_job = processes[0];
+        processes.erase(processes.begin());
+        vector<Process> next_executions;
+        vector<int> executions;
+        
     }
     
 }
