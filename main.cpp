@@ -103,7 +103,7 @@ int main(int argc, char *argv[]){
         string method = (config.method == 0) ? "None"
                         : (config.method == 1) ? "First Come, First Served Scheduling"
                         : (config.method == 2) ? "Shortest-Job-First Scheduling"
-                        : (config.method == 2) ? "Priority Scheduling"
+                        : (config.method == 3) ? "Priority Scheduling"
                         : "Round-Robin Scheduling";
 
         system("cls");
@@ -388,6 +388,7 @@ void sjf_function()
                         next_executions.push_back(processes[i]);
                     }
                 }
+                gl = true;
             }
             
             for(int i = 0; i < next_executions.size(); i++){
@@ -494,6 +495,7 @@ void sjf_function()
                         next_executions.push_back(processes[i]);
                     }
                 }
+                gl = true;
             }
 
             current_time += 1;
@@ -590,6 +592,7 @@ void priority_function()
                         next_executions.push_back(processes[i]);
                     }
                 }
+                gl = true;
             }
 
             current_time += 1;

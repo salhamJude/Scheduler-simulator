@@ -1,8 +1,8 @@
 Scheduling Method: Priority Scheduling - Non-Preemptive
 Process Waiting Times:
 P1:0ms
-P2:10ms
-P3:4ms
-P4:13ms
-P5:5ms
-Average Waiting Time:6.400000ms
+P2:9ms
+P3:15ms
+P4:16ms
+P5:8ms
+Average Waiting Time:9.600000ms
