@@ -565,8 +565,37 @@ void priority_function()
             l++;
             processes.push_back(p);
         }
+        int right[config.nb_process];
+        int waiting_time[config.nb_process]={0};
+        for (int i = 0; i < config.nb_process; i++)
+        {
+            right[i] = processes[i].arrival_time;
+        }
         
-        
+        struct Process fp = processes[0];
+        struct Process short_job = processes[0];
+        processes.erase(processes.begin());
+        vector<Process> next_executions;
+        vector<int> executions;
+        while (true)
+        {
+            bool gl = true, gl2 = true; 
+            for (int i = 0; i < processes.size(); ++i) {
+                if (processes[i].arrival_time == current_time) {
+                    for (int j = 0; j < next_executions.size(); ++j) {
+                        if (next_executions[j].burst_time > processes[i].burst_time) {
+                            gl = false;
+                            next_executions.insert(next_executions.begin() + j, processes[i]);
+                            break;
+                        }
+                    }
+                    if (gl) {
+                        next_executions.push_back(processes[i]);
+                    }
+                }
+                gl = true;
+            }
+        }
     }else{
         config.out = "";
         config.out += "Scheduling Method: Priority Scheduling - Non-Preemptive\n";
