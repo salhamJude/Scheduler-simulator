@@ -419,6 +419,7 @@ void sjf_function()
                     }
                     break;
                 }
+                gl2 = true;
             }
             current_time += 1;
             short_job.burst_time -= 1;
@@ -541,7 +542,31 @@ void sjf_function()
 void priority_function()
 {
     if(config.preemptive_mode){
-
+        config.out = "";
+        config.out += "Scheduling Method: Priority Scheduling - Preemptive\n";
+        config.out += "Process Waiting Times:\n";    
+        cout << "Scheduling Method: Priority Scheduling - Preemptive\n";
+        cout << "Process Waiting Times:\n";
+        vector<Process> processes;
+        int current_time = 0; 
+        int executed = 1;
+        int x = 0;
+        struct node* temp = l_header;
+        int l =1;
+        float avg =0.0;
+        while (temp != nullptr)
+        {
+            struct Process p;
+            p.arrival_time = temp->data.arrival_time;
+            p.burst_time = temp->data.burst_time;
+            p.priority = temp->data.priority;
+            p.c = l;
+            temp = temp->next;
+            l++;
+            processes.push_back(p);
+        }
+        
+        
     }else{
         config.out = "";
         config.out += "Scheduling Method: Priority Scheduling - Non-Preemptive\n";
