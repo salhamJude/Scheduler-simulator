@@ -583,7 +583,7 @@ void priority_function()
             for (int i = 0; i < processes.size(); ++i) {
                 if (processes[i].arrival_time == current_time) {
                     for (int j = 0; j < next_executions.size(); ++j) {
-                        if (next_executions[j].burst_time > processes[i].burst_time) {
+                        if (next_executions[j].priority > processes[i].priority) {
                             gl = false;
                             next_executions.insert(next_executions.begin() + j, processes[i]);
                             break;
@@ -594,6 +594,36 @@ void priority_function()
                     }
                 }
                 gl = true;
+            }
+            for(int i = 0; i < next_executions.size(); i++){
+                if(short_job.priority > next_executions[i].priority){
+                    struct Process temp = short_job;
+                    short_job = next_executions[i];
+
+                    right[temp.c - 1] = current_time;
+                    waiting_time[short_job.c - 1] += current_time - right[short_job.c - 1];
+                    next_executions.erase(std::next(next_executions.begin(),i));
+                    for(int j = 0; j < next_executions.size(); j++){
+                        if(temp.priority < next_executions[j].priority){
+                            gl2 = false;
+                            next_executions.insert(next_executions.begin() + j, temp);
+                            break;
+                        }else if(temp.priority == next_executions[j].priority){
+                            gl2 = false;
+                            int  d = 0;
+                            if(temp.c > next_executions[j].c ){
+                                d++;
+                            }
+                            next_executions.insert(next_executions.begin() + j + d, temp);
+                            break;
+                        }
+                    }
+                    if(gl2){
+                        next_executions.push_back(temp);
+                    }
+                    break;
+                }
+                gl2 = true;
             }
         }
     }else{
