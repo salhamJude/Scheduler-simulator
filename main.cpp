@@ -625,7 +625,30 @@ void priority_function()
                 }
                 gl2 = true;
             }
+            current_time += 1;
+            short_job.burst_time -= 1;
+            executions.push_back(short_job.c);
+            x += 1;
+            if (short_job.burst_time <= 0) {
+                if (!next_executions.empty()) {
+                    right[short_job.c - 1] = current_time;
+                    waiting_time[next_executions[0].c - 1] += current_time - right[next_executions[0].c - 1];
+                    short_job = next_executions[0];
+                    next_executions.erase(next_executions.begin());
+                    executed += 1;
+                } else {
+                    break;  
+                }
+            }
         }
+        for (int i = 0; i < config.nb_process; i++){
+            avg += waiting_time[i];
+            cout << "P" << i + 1 << ":" << waiting_time[i] << "ms\n";
+            config.out += "P" + std::to_string(i) + ":" + std::to_string(waiting_time[i]) + "ms\n";
+        }
+        cout << "Average Waiting Time:" << avg/config.nb_process << "ms" << endl;
+        config.out += "Average Waiting Time:" + std::to_string(avg/config.nb_process) + "ms\n";
+        writeOutput();
     }else{
         config.out = "";
         config.out += "Scheduling Method: Priority Scheduling - Non-Preemptive\n";
