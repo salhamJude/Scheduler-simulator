@@ -12,13 +12,15 @@ void writeOutput();
 struct node* createNode(struct Process process);
 struct node* insertBack(struct node* header,struct Process process);
 struct node* deleteFront(struct node* header);
-void swap(struct Process& a, struct Process& b);
+void swap(struct Process* a, struct Process* b);
 void readProcess();
 void fcfs_function();
 void sjf_function();
 void priority_function();
 void rr_function();
 int is_empty(struct node *header);
+void bubbleSort(node * header);
+void printList(node * header);
 char *valueF, *valueO;
 FILE *infile, *outfile;
 struct node* l_header;
@@ -40,7 +42,7 @@ struct Config
         int opt;
        do{
 
-            system("cls");
+            system("clear");
             cout << "\tChoose a scheduling method" << endl;
             cout << "1) First Come, First Served Scheduling \n"
                 << "2) Shortest-Job-First Scheduling \n"
@@ -71,7 +73,7 @@ struct Config
     void setPreemptive_mode(){
         int opt;
         do{
-            system("cls");
+            system("clear");
             cout << "Set the preemptive mode (1 : ON, 0 : OFF)" << endl;
             cin >> opt;
         }while(opt != 0 && opt != 1);
@@ -106,7 +108,7 @@ int main(int argc, char *argv[]){
                         : (config.method == 3) ? "Priority Scheduling"
                         : "Round-Robin Scheduling";
 
-        system("cls");
+        system("clear");
         cout << "\tCPU SCHEDULER SIMILATOR" << endl;
         cout << "1) Scheduling method (" << method << ") \n"
              << "2) Preemptive Mode (" << (config.preemptive_mode == 1 ? "ON" : "OFF") << ") \n"
@@ -117,7 +119,7 @@ int main(int argc, char *argv[]){
         cin >> menu_opt;
     }while(menu_opt <= 0 or menu_opt >= 5);
 
-    system("cls");
+    system("clear");
     switch(menu_opt){
         case 1:
             config.setMethod();
@@ -134,15 +136,27 @@ int main(int argc, char *argv[]){
                     break;
                 case Scheduling_method::FSFS :
                     fcfs_function();
+                    std::cout << "Pausing for 5 seconds..." << std::endl;
+                    sleep(5);
+                    goto back;
                     break;
                 case Scheduling_method::SJF :
                     sjf_function();
+                    std::cout << "Pausing for 5 seconds..." << std::endl;
+                    sleep(5);
+                    goto back;
                     break;
                 case Scheduling_method::PRIORITY :
                     priority_function();
+                    std::cout << "Pausing for 5 seconds..." << std::endl;
+                    sleep(5);
+                    goto back;
                     break;
                 case Scheduling_method::RR:
                     rr_function();
+                    std::cout << "Pausing for 5 seconds..." << std::endl;
+                    sleep(5);
+                    goto back;
                     break;
                 default:
                     goto back;
@@ -195,8 +209,9 @@ void openFiles()
 }
 void writeOutput()
 {
-    outfile = fopen(valueO,"w+");
+    outfile = fopen(valueO,"a");
     fprintf(outfile,config.out.c_str());
+    fclose(outfile);
 }
 node *createNode(Process process)
 {
@@ -234,20 +249,23 @@ node *deleteFront(node *header)
     free(temp);
     return header;
 }
-void swap(struct Process& a, struct Process& b)
+void swap(struct Process* a, struct Process* b)
 {
     struct Process t;
-    t.arrival_time = a.arrival_time;
-    t.burst_time = a.burst_time;
-    t.priority = a.priority;
+    t.arrival_time = a->arrival_time;
+    t.burst_time = a->burst_time;
+    t.priority = a->priority;
+    t.c = a->c;
 
-    a.arrival_time = b.arrival_time;
-    a.burst_time = b.burst_time;
-    a.priority = b.priority;
+    a->arrival_time = b->arrival_time;
+    a->burst_time = b->burst_time;
+    a->priority = b->priority;
+    a->c = b->c;
 
-    b.arrival_time = t.arrival_time;
-    b.burst_time = t.burst_time;
-    b.priority = t.priority;
+    b->arrival_time = t.arrival_time;
+    b->burst_time = t.burst_time;
+    b->priority = t.priority;
+    b->c = t.c;
 }
 void readProcess()
 {
@@ -258,7 +276,6 @@ void readProcess()
     int i=0, j =0;
     while (fgets(processData, sizeof(processData), infile) != NULL) {
         
-        printf("%s", processData);
         i=0;
         string val;
         char *data = strtok(processData,":");
@@ -282,18 +299,8 @@ void readProcess()
     }
     fclose(infile);
     struct node* temp = l_header;
-    
-   /*
-    while (temp != nullptr)
-    {
-        cout << temp->data.burst_time << ":" << temp->data.arrival_time << ":" << temp->data.priority << endl;
-        temp = temp->next;
-    }
-
-    while (l_header != nullptr){
-        l_header = deleteFront(l_header);
-    }
-    */
+    bubbleSort(l_header);
+  
 }
 void fcfs_function()
 {
@@ -305,13 +312,15 @@ void fcfs_function()
     Process processes [config.nb_process];
     struct node* temp = l_header;
     int i = 0;
-    
+    int l =1;
     while (temp != nullptr)
     {
         processes[i].arrival_time = temp->data.arrival_time;
         processes[i].burst_time = temp->data.burst_time;
         processes[i].priority = temp->data.priority;
-        temp = temp->next;
+        processes[i].c = l;
+            temp = temp->next;
+            l++;
         i++;
     }
     
@@ -326,8 +335,8 @@ void fcfs_function()
         }
         waiting_time[i] -= processes[i].arrival_time;
         avg += waiting_time[i];
-        cout << "P" << i << ":" << waiting_time[i] << "ms\n";
-        config.out += "P" + std::to_string(i) + ":" + std::to_string(waiting_time[i]) + "ms\n";
+        cout << "P" << i + 1 << ":" << waiting_time[i] << "ms\n";
+        config.out += "P" + std::to_string(i + 1) + ":" + std::to_string(waiting_time[i]) + "ms\n";
     }
     cout << "Average Waiting Time:" << avg/config.nb_process << "ms" << endl;
     config.out += "Average Waiting Time:" + std::to_string(avg/config.nb_process) + "ms\n";
@@ -440,11 +449,11 @@ void sjf_function()
         for (int i = 0; i < config.nb_process; i++){
             avg += waiting_time[i];
             cout << "P" << i + 1 << ":" << waiting_time[i] << "ms\n";
-            config.out += "P" + std::to_string(i) + ":" + std::to_string(waiting_time[i]) + "ms\n";
+            config.out += "P" + std::to_string(i +1) + ":" + std::to_string(waiting_time[i]) + "ms\n";
         }
         cout << "Average Waiting Time:" << avg/config.nb_process << "ms" << endl;
         config.out += "Average Waiting Time:" + std::to_string(avg/config.nb_process) + "ms\n";
-            
+        writeOutput();  
     }else{    
         config.out = "";
         config.out += "Scheduling Method: Shortest Job First - Non-Preemptive\n";
@@ -644,7 +653,7 @@ void priority_function()
         for (int i = 0; i < config.nb_process; i++){
             avg += waiting_time[i];
             cout << "P" << i + 1 << ":" << waiting_time[i] << "ms\n";
-            config.out += "P" + std::to_string(i) + ":" + std::to_string(waiting_time[i]) + "ms\n";
+            config.out += "P" + std::to_string(i + 1) + ":" + std::to_string(waiting_time[i]) + "ms\n";
         }
         cout << "Average Waiting Time:" << avg/config.nb_process << "ms" << endl;
         config.out += "Average Waiting Time:" + std::to_string(avg/config.nb_process) + "ms\n";
@@ -797,7 +806,7 @@ void rr_function(){
     for (int i = 0; i < config.nb_process; i++){
         avg += waiting_time[i];
         cout << "P" << i + 1 << ":" << waiting_time[i] << "ms\n";
-        config.out += "P" + std::to_string(i) + ":" + std::to_string(waiting_time[i]) + "ms\n";
+        config.out += "P" + std::to_string(i +1) + ":" + std::to_string(waiting_time[i]) + "ms\n";
     }
     cout << "Average Waiting Time:" << avg/config.nb_process << "ms" << endl;
     config.out += "Average Waiting Time:" + std::to_string(avg/config.nb_process) + "ms\n";
@@ -810,5 +819,33 @@ int is_empty(struct node *header)
     else 
         return 0;
 }
+void bubbleSort(node * header) {
+    int swapped;
+    node * ptr1;
+    node * lptr = nullptr;
 
+    
+    if (header == nullptr)
+        return;
 
+    do {
+        swapped = 0;
+        ptr1 = header;
+
+        while (ptr1->next != lptr) {
+            if (ptr1->data.arrival_time > ptr1->next->data.arrival_time) {
+                swap(ptr1->data, ptr1->next->data);
+                swapped = 1;
+            }
+            ptr1 = ptr1->next;
+        }
+        lptr = ptr1;
+    } while (swapped);
+}
+void printList(node * header) {
+    node * temp = header;
+    while (temp != nullptr) {
+        std::cout << "Burst Time: " << temp->data.burst_time << ", Arrival Time: " << temp->data.arrival_time  << ", Priority: " << temp->data.priority  << std::endl;
+        temp = temp->next;
+    }
+}
