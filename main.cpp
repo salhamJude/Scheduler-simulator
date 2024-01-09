@@ -300,6 +300,16 @@ void readProcess()
     fclose(infile);
     struct node* temp = l_header;
     bubbleSort(l_header);
+    if(l_header->data.arrival_time != 0){
+        struct node* temp = l_header;
+        int d = l_header->data.arrival_time;
+        while (temp != nullptr)
+        {
+            temp->data.arrival_time -= d;
+            temp = temp->next;
+            i++;
+        }
+    }
   
 }
 void fcfs_function()
